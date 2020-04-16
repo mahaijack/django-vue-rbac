@@ -7,7 +7,7 @@ log/
 static/
 __pycache__/
 *.pyc
-# /server/server/settings_dev.py
+server/settings_dev.py
 
 # client
 node_modules/
