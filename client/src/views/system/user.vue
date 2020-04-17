@@ -368,34 +368,35 @@ export default {
         if (valid) {
           const isEdit = this.dialogType === "edit";
           if (isEdit) {
-            updateUser(this.user.id, this.user).then(() => {
-              for (let index = 0; index < this.userList.length; index++) {
-                if (this.userList[index].id === this.user.id) {
-                  this.userList.splice(index, 1, Object.assign({}, this.user));
-                  break;
-                }
-              }
-              this.dialogVisible = false;
+            if(this.user.dept instanceof Array ){
+              this.user.dept = this.user.dept.pop();
+            }
+            updateUser(this.user.id, this.user).then(res => {
+              if(res.code>=200){
+                this.getList();
+                this.dialogVisible = false;
               this.$notify({
                 title: "成功",
                 message: "编辑成功",
                 type: "success",
                 duration: 2000
               });
+              }
             });
           } else {
             this.user.dept = this.user.dept.pop();
             createUser(this.user).then(res => {
-              // this.user = res.data
-              // this.userList.unshift(this.user)
-              this.getList();
-              this.dialogVisible = false;
-              this.$notify({
+              if(res.code>=200){
+                this.getList();
+                this.dialogVisible = false;
+                this.$notify({
                 title: "成功",
                 message: "新增成功",
                 type: "success",
                 duration: 2000
               });
+              }
+              
             });
           }
         } else {

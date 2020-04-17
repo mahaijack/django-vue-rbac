@@ -27,7 +27,7 @@ def get_child_queryset(name, pk, hasParent=True):
     是否包含父默认True
     '''
     app, model = name.split('.')
-    cls = get_model(app, model)
+    cls = apps.get_model(app, model)
     queryset = cls.objects.none()
     fatherQueryset = cls.objects.filter(pk=pk)
     if fatherQueryset.exists():

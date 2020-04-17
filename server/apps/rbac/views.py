@@ -126,7 +126,7 @@ class UserViewSet(ModelViewSet):
         if name is not None:
             queryset = queryset.filter(name__contains=name)
         if dept is not None:
-            deptqueryset = get_child_queryset('apps.rbac.Organization',dept)
+            deptqueryset = get_child_queryset('rbac.Organization',dept)
             queryset = queryset.filter(dept__in=deptqueryset)
         return queryset
 

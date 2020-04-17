@@ -43,9 +43,10 @@ class UserListSerializer(serializers.ModelSerializer):
     '''
     用户列表序列化
     '''
+    dept_name = serializers.StringRelatedField(source='dept')
     class Meta:
         model = User
-        fields = ('id', 'name', 'phone', 'email', 'position', 'username', 'is_active', 'date_joined')
+        fields = ('id', 'name', 'phone', 'email', 'position', 'username', 'is_active', 'date_joined', 'dept_name', 'dept')
 
 class UserModifySerializer(serializers.ModelSerializer):
     '''
@@ -55,8 +56,7 @@ class UserModifySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'name', 'phone', 'email', 'avatar', 'dept', 'position', 'superior',
-                  'is_active', 'roles']
+        fields = ['id', 'username', 'name', 'phone', 'email', 'dept', 'position', 'avatar', 'is_active', 'roles', 'is_superuser']
 
     def validate_phone(self, phone):
         re_phone = '^1[358]\d{9}$|^147\d{8}$|^176\d{8}$'
@@ -74,8 +74,7 @@ class UserCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ['id', 'username', 'name', 'phone', 'email', 'dept', 'position', 'is_active', 'roles',
-                  'password','is_superuser']
+        fields = ['id', 'username', 'name', 'phone', 'email', 'dept', 'position', 'avatar', 'is_active', 'roles', 'is_superuser']
 
     def validate_username(self, username):
         if User.objects.filter(username=username):
@@ -89,13 +88,4 @@ class UserCreateSerializer(serializers.ModelSerializer):
         if User.objects.filter(phone=phone):
             raise serializers.ValidationError('手机号已经被注册')
         return phone
-    
-    # def create(self, validated_data):
-    #     user = User(**validated_data)
-    #     if validated_data['password']:
-    #         user.set_password(validated_data['password'])
-    #     else:
-    #         user.set_password('password')
-    #     user.save()
-    #     return user
 

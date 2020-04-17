@@ -57,7 +57,7 @@ service.interceptors.response.use(
     }
 
 
-    else if ( res.code > 400) {
+    else if ( res.code >= 400) {
       Message({
         message: res.msg || '请求出错',
         type: 'error',

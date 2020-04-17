@@ -3,11 +3,11 @@
 .vs/
 venv/
 media/
-log/
+*.log
 static/
 __pycache__/
 *.pyc
-server/settings_dev.py
+server/server/settings_dev.py
 
 # client
 node_modules/
