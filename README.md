@@ -19,6 +19,8 @@
 
 同步数据库 `python manage.py migrate`
 
+创建超级管理员 `python manage.py createsuperuser`
+
 运行服务 `python manage.py runserver 8000` 
 
 ## vue前端
@@ -45,8 +47,10 @@ location / {
 
 运行nginx.exe  
 
-## nginx
+## 运行
 打开localhost:8012即可访问
 
 接口文档 localhost:8000/docs
+
+后台地址 localhost:8000/admin
 
