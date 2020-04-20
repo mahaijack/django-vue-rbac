@@ -7,6 +7,8 @@
 ### django后端
 定位到server文件夹
 
+新建log和media空文件夹
+
 建立虚拟环境 `python -m venv venv`
 
 激活虚拟环境 `.\venv\scripts\activate`
@@ -14,8 +16,6 @@
 安装依赖包 `pip install -r requirements.txt`
 
 修改数据库连接 `server\settings_dev.py`
-
-同步数据库 `python manage.py makemigrations apps.rbac`
 
 同步数据库 `python manage.py migrate`
 
