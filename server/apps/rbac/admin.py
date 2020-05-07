@@ -5,4 +5,3 @@ admin.site.register(User)
 admin.site.register(Organization)
 admin.site.register(Role)
 admin.site.register(Permission)
-

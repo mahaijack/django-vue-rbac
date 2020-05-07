@@ -22,84 +22,94 @@ from .serializers import (OrganizationSerializer, PermissionSerializer,
                           PositionSerializer, RoleSerializer,
                           UserCreateSerializer, UserListSerializer,
                           UserModifySerializer)
+from .filters import UserFilter
+import logging
 
+logger = logging.getLogger('log')
+# logger.info('请求成功！ response_code:{}；response_headers:{}；response_body:{}'.format(response_code, response_headers, response_body[:251]))
+# logger.error('请求出错：{}'.format(error))
 
 class LogoutView(APIView):
     permission_classes = []
-    def get(self, request, *args, **kwargs):# 可将token加入黑名单
+
+    def get(self, request, *args, **kwargs):  # 可将token加入黑名单
         return Response(status=status.HTTP_200_OK)
+
 
 class PositionViewSet(ModelViewSet):
     '''
     岗位：增删改查
     '''
-    perms_map = [{'create': 'position_create'}, 
-                {'update': 'position_update'},
-                {'destory': 'position_delete'},
-                {'retrieve': 'position_view'},
-                {'list': 'position_view'}, 
-                ]
+    perms_map = [{'create': 'position_create'},
+                 {'update': 'position_update'},
+                 {'destory': 'position_delete'},
+                 {'retrieve': 'position_view'},
+                 {'list': 'position_view'},
+                 ]
     queryset = Position.objects.all()
     serializer_class = PositionSerializer
     pagination_class = None
-    search_fields = ('^name',)
-    ordering_fields = ('id',)
+    search_fields = ['^name']
+    ordering_fields = ['id']
     ordering = 'id'
 
 
 class TestView(APIView):
-    perms_map = [{'get':'test_view'}] # 单个API控权
+    perms_map = [{'get': 'test_view'}]  # 单个API控权
     pass
+
 
 class PermissionViewSet(ModelViewSet):
     '''
     权限：增删改查
     '''
-    perms_map = [{'create': 'perm_create'}, # 视图类控权
-                {'update': 'perm_update'},
-                {'destory': 'perm_delete'},
-                {'retrieve': 'perm_view'},
-                {'list': 'perm_view'}, 
-                ]
+    perms_map = [{'create': 'perm_create'},  # 视图类控权
+                 {'update': 'perm_update'},
+                 {'destory': 'perm_delete'},
+                 {'retrieve': 'perm_view'},
+                 {'list': 'perm_view'},
+                 ]
     queryset = Permission.objects.all()
     serializer_class = PermissionSerializer
     pagination_class = None
-    search_fields = ('name',)
-    ordering_fields = ('sort',)
+    search_fields = ['name']
+    ordering_fields = ['sort']
     ordering = 'id'
+
 
 class OrganizationViewSet(ModelViewSet):
     '''
     组织机构：增删改查
     '''
-    perms_map = [{'create': 'org_create'}, 
-                {'update': 'org_update'},
-                {'destory': 'org_delete'},
-                {'retrieve': 'org_view'},
-                {'list': 'org_view'}, 
-                ]
+    perms_map = [{'create': 'org_create'},
+                 {'update': 'org_update'},
+                 {'destory': 'org_delete'},
+                 {'retrieve': 'org_view'},
+                 {'list': 'org_view'},
+                 ]
     queryset = Organization.objects.all()
     serializer_class = OrganizationSerializer
     pagination_class = None
-    search_fields = ('^name',)
-    ordering_fields = ('id',)
+    search_fields = ['^name']
+    ordering_fields = ['id']
     ordering = 'id'
+
 
 class RoleViewSet(ModelViewSet):
     '''
     角色：增删改查
     '''
-    perms_map = [{'create': 'role_create'}, 
-                {'update': 'role_update'},
-                {'destory': 'role_delete'},
-                {'retrieve': 'role_view'},
-                {'list': 'role_view'}, 
-                ]
+    perms_map = [{'create': 'role_create'},
+                 {'update': 'role_update'},
+                 {'destory': 'role_delete'},
+                 {'retrieve': 'role_view'},
+                 {'list': 'role_view'},
+                 ]
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
     pagination_class = None
-    search_fields = ('name',)
-    ordering_fields = ('id',)
+    search_fields = ['name']
+    ordering_fields = ['id']
     ordering = 'id'
 
 
@@ -107,26 +117,23 @@ class UserViewSet(ModelViewSet):
     '''
     用户管理：增删改查
     '''
-    perms_map = [{'create': 'user_create'}, 
-                {'update': 'user_update'},
-                {'destory': 'user_delete'},
-                {'retrieve': 'user_view'},
-                {'list': 'user_view'}, 
-                ]
+    perms_map = [{'create': 'user_create'},
+                 {'update': 'user_update'},
+                 {'destory': 'user_delete'},
+                 {'retrieve': 'user_view'},
+                 {'list': 'user_view'},
+                 ]
     queryset = User.objects.all().order_by('-id')
     serializer_class = UserListSerializer
-    filter_fields = ('is_active',)
-    search_fields = ('username', 'name', 'phone', 'email')
-    ordering_fields = ('-id',)
+    filterset_class = UserFilter
+    search_fields = ['username', 'name', 'phone', 'email']
+    ordering_fields = ['-id']
 
     def get_queryset(self):
         queryset = self.queryset
-        dept = self.request.query_params.get('dept', None) # 该部门及其子部门所有员工
-        name = self.request.query_params.get('name',None)
-        if name is not None:
-            queryset = queryset.filter(name__contains=name)
+        dept = self.request.query_params.get('dept', None)  # 该部门及其子部门所有员工
         if dept is not None:
-            deptqueryset = get_child_queryset('rbac.Organization',dept)
+            deptqueryset = get_child_queryset('rbac.Organization', dept)
             queryset = queryset.filter(dept__in=deptqueryset)
         return queryset
 
@@ -169,8 +176,8 @@ class UserViewSet(ModelViewSet):
                 return Response('新密码两次输入不一致!', status=status.HTTP_400_BAD_REQUEST)
         else:
             return Response('旧密码错误!', status=status.HTTP_400_BAD_REQUEST)
-    
-    @action(methods=['get'], detail=False, permission_classes=[IsAuthenticated], # perms_map=[{'info':'my_info'}], 自定义action控权
+
+    @action(methods=['get'], detail=False, permission_classes=[IsAuthenticated],  # perms_map=[{'info':'my_info'}], 自定义action控权
             url_name='my_info')
     def info(self, request, pk=None):
         '''
@@ -182,7 +189,7 @@ class UserViewSet(ModelViewSet):
             'id': user.id,
             'username': user.username,
             'name': user.name,
-            'roles': user.roles.all().values_list('name',flat=True),
+            'roles': user.roles.all().values_list('name', flat=True),
             # 'avatar': request._request._current_scheme_host + '/media/' + str(user.image),
             'avatar': user.avatar,
             'perms': perms,

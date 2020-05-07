@@ -1,4 +1,4 @@
-from django.urls import path,include
+from django.urls import path, include
 from .views import UserViewSet, OrganizationViewSet, PermissionViewSet, RoleViewSet, PositionViewSet, TestView
 from rest_framework import routers
 
@@ -12,5 +12,5 @@ router.register('position', PositionViewSet, basename="position")
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('test/',TestView.as_view())
+    path('test/', TestView.as_view())
 ]

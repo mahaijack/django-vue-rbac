@@ -16,16 +16,18 @@ def get_permission_list(user):
         if roles:
             for i in roles:
                 perms = perms | i.perms.all()
-        perms_list = perms.values_list('method',flat=True)
+        perms_list = perms.values_list('method', flat=True)
         perms_list = list(set(perms_list))
     cache.set(user.username, perms_list)
     cache.persist(user.username)
     return perms_list
-    
+
+
 class RbacPermission(BasePermission):
     '''
     基于角色的权限校验类
     '''
+
     def has_permission(self, request, view):
         '''
         权限校验逻辑

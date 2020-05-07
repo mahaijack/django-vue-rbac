@@ -1,7 +1,8 @@
 from django.db import models
 from django.apps import apps
 
-def get_child_queryset_x(checkQueryset,fatherQueryset,noneQueryset,hasParent=True):
+
+def get_child_queryset_x(checkQueryset, fatherQueryset, noneQueryset, hasParent=True):
     '''
     获取所有子集
     查checkQueryset
@@ -12,12 +13,13 @@ def get_child_queryset_x(checkQueryset,fatherQueryset,noneQueryset,hasParent=Tru
     if fatherQueryset is None:
         return noneQueryset
     if hasParent:
-        noneQueryset = noneQueryset|fatherQueryset
+        noneQueryset = noneQueryset | fatherQueryset
     child_queryset = checkQueryset.filter(pid=fatherQueryset.first())
     while child_queryset:
-        noneQueryset = noneQueryset|child_queryset
+        noneQueryset = noneQueryset | child_queryset
         child_queryset = checkQueryset.filter(pid__in=child_queryset)
     return noneQueryset.distinct()
+
 
 def get_child_queryset(name, pk, hasParent=True):
     '''
@@ -32,10 +34,9 @@ def get_child_queryset(name, pk, hasParent=True):
     fatherQueryset = cls.objects.filter(pk=pk)
     if fatherQueryset.exists():
         if hasParent:
-            queryset = queryset|fatherQueryset
+            queryset = queryset | fatherQueryset
         child_queryset = cls.objects.filter(pid=fatherQueryset.first())
         while child_queryset:
-            queryset = queryset|child_queryset
+            queryset = queryset | child_queryset
             child_queryset = cls.objects.filter(pid__in=child_queryset)
     return queryset
-        

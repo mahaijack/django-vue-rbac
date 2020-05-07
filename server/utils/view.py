@@ -9,13 +9,15 @@ from datetime import datetime
 import os
 import uuid
 
+
 class UploadFileView(APIView):
     permission_classes = [IsAuthenticated]
     parser_classes = (MultiPartParser,)
+
     def post(self, request, *args, **kwargs):
         fileobj = request.FILES['file']
         file_name = fileobj.name.encode('utf-8').decode('utf-8')
-        file_name_new = str(uuid.uuid1()) + '.' + file_name.split('.')[1]
+        file_name_new = str(uuid.uuid1()) + '.' + file_name.split('.')[-1]
         subfolder = os.path.join('media', datetime.now().strftime("%Y%m%d"))
         if not os.path.exists(subfolder):
             os.mkdir(subfolder)

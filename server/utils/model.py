@@ -3,6 +3,8 @@ import django.utils.timezone as timezone
 from django.db.models.query import QuerySet
 
 # 自定义软删除查询基类
+
+
 class SoftDeletableQuerySetMixin(object):
     '''
     QuerySet for SoftDeletableModel. Instead of removing instance sets
@@ -42,10 +44,14 @@ class SoftDeletableManagerMixin(object):
 class SoftDeletableManager(SoftDeletableManagerMixin, models.Manager):
     pass
 
+
 class SoftModel(models.Model):
-    create_time = models.DateTimeField(default=timezone.now, verbose_name='创建时间', help_text='创建时间')
-    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间', help_text='修改时间')
-    is_deleted = models.BooleanField(default=False, verbose_name='删除标记', help_text='删除标记')
+    create_time = models.DateTimeField(
+        default=timezone.now, verbose_name='创建时间', help_text='创建时间')
+    update_time = models.DateTimeField(
+        auto_now=True, verbose_name='修改时间', help_text='修改时间')
+    is_deleted = models.BooleanField(
+        default=False, verbose_name='删除标记', help_text='删除标记')
 
     class Meta:
         abstract = True
@@ -63,10 +69,14 @@ class SoftModel(models.Model):
 
             return super(SoftModel, self).delete(using=using, *args, **kwargs)
 
+
 class CommonModel(models.Model):
-    create_time = models.DateTimeField(default=timezone.now, verbose_name='创建时间', help_text='创建时间')
-    update_time = models.DateTimeField(auto_now=True, verbose_name='修改时间', help_text='修改时间')
-    is_deleted = models.BooleanField(default=False, verbose_name='删除标记', help_text='删除标记')
+    create_time = models.DateTimeField(
+        default=timezone.now, verbose_name='创建时间', help_text='创建时间')
+    update_time = models.DateTimeField(
+        auto_now=True, verbose_name='修改时间', help_text='修改时间')
+    is_deleted = models.BooleanField(
+        default=False, verbose_name='删除标记', help_text='删除标记')
 
     class Meta:
         abstract = True
