@@ -2,7 +2,25 @@ import re
 
 from rest_framework import serializers
 
-from .models import Organization, Permission, Role, User, Position
+from .models import Organization, Permission, Role, User, Position, DictType, Dict
+
+
+class DictTypeSerializer(serializers.ModelSerializer):
+    '''
+    数据字典类型序列化
+    '''
+    class Meta:
+        model = DictType
+        fields = '__all__'
+
+
+class DictSerializer(serializers.ModelSerializer):
+    '''
+    数据字典序列化
+    '''
+    class Meta:
+        model = Dict
+        fields = '__all__'
 
 
 class PositionSerializer(serializers.ModelSerializer):
@@ -53,8 +71,14 @@ class UserListSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'name', 'phone', 'email', 'position',
-                  'username', 'is_active', 'date_joined', 'dept_name', 'dept')
+                  'username', 'is_active', 'date_joined', 'dept_name', 'dept', 'roles')
 
+    @staticmethod
+    def setup_eager_loading(queryset):
+        """ Perform necessary eager loading of data. """
+        queryset = queryset.select_related('superior','dept')
+        queryset = queryset.prefetch_related('roles',)
+        return queryset
 
 class UserModifySerializer(serializers.ModelSerializer):
     '''

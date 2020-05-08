@@ -131,11 +131,13 @@ class UserViewSet(ModelViewSet):
 
     def get_queryset(self):
         queryset = self.queryset
+        queryset = self.get_serializer_class().setup_eager_loading(queryset)  # 性能优化
         dept = self.request.query_params.get('dept', None)  # 该部门及其子部门所有员工
         if dept is not None:
             deptqueryset = get_child_queryset('rbac.Organization', dept)
             queryset = queryset.filter(dept__in=deptqueryset)
         return queryset
+    
 
     def get_serializer_class(self):
         # 根据请求类型动态变更serializer

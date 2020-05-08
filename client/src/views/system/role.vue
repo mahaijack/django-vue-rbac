@@ -63,16 +63,16 @@
             </el-form-item>
             <el-form-item label="权限范围" v-show="role.datas == '自定义'">
               <el-tree
-          class="filter-tree"
-          v-model="role.depts"
-          :data="orgData"
-          show-checkbox
-          node-key="id"
-          default-expand-all
-          highlight-current
-          :expand-on-click-node="false"
-          ref="depts_tree"
-        ></el-tree>
+                class="filter-tree"
+                v-model="role.depts"
+                :data="orgData"
+                show-checkbox
+                node-key="id"
+                default-expand-all
+                highlight-current
+                :expand-on-click-node="false"
+                ref="depts_tree"
+              ></el-tree>
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -99,71 +99,69 @@
 </template>
 
 <script>
-import path from "path";
-import { genTree, deepClone } from "@/utils";
+import path from 'path'
+import { genTree, deepClone } from '@/utils'
 import {
   getRoutes,
   getRoleAll,
   createRole,
   deleteRole,
   updateRole
-} from "@/api/role";
-import { getOrgAll } from "@/api/org"
+} from '@/api/role'
+import { getOrgAll } from '@/api/org'
 
 const defaultRole = {
-  id: "",
-  name: "",
-  desc: "",
+  id: '',
+  name: '',
+  desc: '',
   perms: [],
-  datas: "本级及以下",
+  datas: '本级及以下',
   depts: []
 };
 
 export default {
   data() {
     return {
-      search: "",
+      search: '',
       role: Object.assign({}, defaultRole),
       routes: [],
       tableData: [],
       rolesList: [],
       dialogVisible: false,
-      dialogType: "new",
+      dialogType: 'new',
       checkStrictly: true,
       listLoading: true,
-      orgData:[],
+      orgData: [],
       dataOptions: [
         {
-          value: "全部",
-          label: "全部"
+          value: '全部',
+          label: '全部'
         },
         {
-          value: "本级",
-          label: "本级"
+          value: '本级',
+          label: '本级'
         },
         {
-          value: "本级及以下",
-          label: "本级及以下"
+          value: '本级及以下',
+          label: '本级及以下'
         },
         {
-          value: "仅本人",
-          label: "仅本人"
+          value: '仅本人',
+          label: '仅本人'
         },
         {
-          value: "自定义",
-          label: "自定义"
+          value: '自定义',
+          label: '自定义'
         }
       ]
-    };
+    }
   },
-  computed: {
-
-  },
+  computed: {},
   created() {
     // Mock: get all routes and roles list from server
-    this.getRoutes();
-    this.getOrgAll();
-    this.getRoleAll();
+    this.getRoutes()
+    this.getOrgAll()
+    this.getRoleAll()
   },
   methods: {
     handleFilter() {
@@ -172,67 +170,67 @@ export default {
           !this.search ||
           data.name.toLowerCase().includes(this.search.toLowerCase())
       );
-      this.tableData = genTree(newData);
+      this.tableData = genTree(newData)
     },
     async getRoutes() {
-      const res = await getRoutes();
+      const res = await getRoutes()
       // this.serviceRoutes = res.data
-      this.routes = genTree(res.data);
+      this.routes = genTree(res.data)
     },
     async getOrgAll() {
       const res = await getOrgAll();
       this.orgData = genTree(res.data)
     },
     async getRoleAll() {
-      this.listLoading = true;
-      const res = await getRoleAll();
-      this.tableData = res.data;
-      this.rolesList = res.data;
-      this.listLoading = false;
+      this.listLoading = true
+      const res = await getRoleAll()
+      this.tableData = res.data
+      this.rolesList = res.data
+      this.listLoading = false
     },
 
     handleAdd() {
       this.role = Object.assign({}, defaultRole);
       if (this.$refs.tree) {
-        this.$refs.tree.setCheckedNodes([]);
+        this.$refs.tree.setCheckedNodes([])
       }
-      this.dialogType = "new";
-      this.dialogVisible = true;
+      this.dialogType = 'new'
+      this.dialogVisible = true
     },
     handleEdit(scope) {
-      this.dialogType = "edit";
-      this.dialogVisible = true;
-      this.role = deepClone(scope.row);
+      this.dialogType = 'edit'
+      this.dialogVisible = true
+      this.role = deepClone(scope.row)
       this.$nextTick(() => {
-        this.$refs.tree.setCheckedKeys(this.role.perms);
-        this.$refs.depts_tree.setCheckedKeys(this.role.depts);
-      });
+        this.$refs.tree.setCheckedKeys(this.role.perms)
+        this.$refs.depts_tree.setCheckedKeys(this.role.depts)
+      })
     },
     handleDelete({ $index, row }) {
-      this.$confirm("确认删除?", "警告", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('确认删除?', '警告', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(async () => {
-          await deleteRole(row.id);
-          this.tableData.splice($index, 1);
+          await deleteRole(row.id)
+          this.tableData.splice($index, 1)
           this.$message({
-            type: "success",
-            message: "成功删除!"
-          });
+            type: 'success',
+            message: '成功删除!'
+          })
         })
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
     },
 
     async confirmRole() {
-      const isEdit = this.dialogType === "edit";
-      this.role.perms = this.$refs.tree.getCheckedKeys();
-      if(this.role.datas == '自定义'){
+      const isEdit = this.dialogType === 'edit'
+      this.role.perms = this.$refs.tree.getCheckedKeys()
+      if (this.role.datas == '自定义') {
         this.role.depts = this.$refs.depts_tree.getCheckedKeys();
-      }else{
+      } else {
         this.role.depts = []
       }
 
@@ -240,30 +238,30 @@ export default {
         await updateRole(this.role.id, this.role);
         for (let index = 0; index < this.tableData.length; index++) {
           if (this.tableData[index].id === this.role.id) {
-            this.tableData.splice(index, 1, Object.assign({}, this.role));
-            break;
+            this.tableData.splice(index, 1, Object.assign({}, this.role))
+            break
           }
         }
       } else {
-        this.role.perms = this.$refs.tree.getCheckedKeys();
-        const { data } = await createRole(this.role);
-        this.getRoleAll();
+        this.role.perms = this.$refs.tree.getCheckedKeys()
+        const { data } = await createRole(this.role)
+        this.getRoleAll()
       }
 
-      const { desc, name } = this.role;
-      this.dialogVisible = false;
+      const { desc, name } = this.role
+      this.dialogVisible = false
       this.$notify({
-        title: "成功",
+        title: '成功',
         dangerouslyUseHTMLString: true,
         message: `
             <div>角色名: ${name}</div>
             <div>角色描述: ${desc}</div>
           `,
-        type: "success"
-      });
+        type: 'success'
+      })
     }
   }
-};
+}
 </script>
 
 <style lang="scss" scoped>

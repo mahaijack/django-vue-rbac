@@ -2,20 +2,20 @@
   <div class="app-container">
     <el-row :gutter="10">
       <el-col :span="6">
-        <el-input placeholder="输入部门名进行过滤" v-model="filterOrgText"></el-input>
+        <el-input v-model="filterOrgText" placeholder="输入部门名进行过滤"/>
 
         <el-tree
+          ref="tree"
+          v-loading="treeLoding"
           class="filter-tree"
           :data="orgData"
-          @node-click="handleOrgClick"
           default-expand-all
           highlight-current
           :expand-on-click-node="false"
           :filter-node-method="filterNode"
-          v-loading="treeLoding"
-          ref="tree"
           style="margin-top:10px;"
-        ></el-tree>
+          @node-click="handleOrgClick"
+        />
       </el-col>
       <el-col :span="18">
         <div>
@@ -56,19 +56,19 @@
           >刷新重置</el-button>
         </div>
         <div style="margin-top:10px">
-          <el-button type="primary" @click="handleAddUser" icon="el-icon-plus">新增</el-button>
+          <el-button type="primary" icon="el-icon-plus" @click="handleAddUser">新增</el-button>
         </div>
         <el-table
+          v-loading="listLoading"
           :data="userList.results"
           style="width: 100%;margin-top:10px;"
           border
           fit
           stripe
-          v-loading="listLoading"
           highlight-current-row
           max-height="600"
         >
-          <el-table-column type="index" width="50"></el-table-column>
+          <el-table-column type="index" width="50" />
           <el-table-column align="center" label="姓名">
             <template slot-scope="scope">{{ scope.row.name }}</template>
           </el-table-column>
@@ -77,8 +77,8 @@
           </el-table-column>
           <el-table-column align="header-center" label="部门">
             <template
-              slot-scope="scope"
               v-if="scope.row.dept_name != null"
+              slot-scope="scope"
             >{{ scope.row.dept_name }}</template>
           </el-table-column>
           <!-- <el-table-column align="header-center" label="状态">
@@ -99,21 +99,21 @@
           <el-table-column align="center" label="操作">
             <template slot-scope="scope">
               <el-button
+                v-if="!scope.row.is_superuser"
+                :disabled="!checkPermission(['user_update'])"
                 type="primary"
                 size="small"
-                @click="handleEdit(scope)"
                 icon="el-icon-edit"
-                :disabled="!checkPermission(['user_update'])"
-                v-if="!scope.row.is_superuser"
-              ></el-button>
+                @click="handleEdit(scope)"
+              />
               <el-button
+                v-if="!scope.row.is_superuser"
+                :disabled="!checkPermission(['user_delete'])"
                 type="danger"
                 size="small"
-                @click="handleDelete(scope)"
                 icon="el-icon-delete"
-                :disabled="!checkPermission(['user_delete'])"
-                v-if="!scope.row.is_superuser"
-              ></el-button>
+                @click="handleDelete(scope)"
+              />
             </template>
           </el-table-column>
         </el-table>
@@ -129,13 +129,7 @@
     </el-row>
 
     <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'编辑用户':'新增用户'">
-      <el-form
-        :model="user"
-        label-width="80px"
-        label-position="right"
-        :rules="rule1"
-        ref="Form"
-      >
+      <el-form ref="Form" :model="user" label-width="80px" label-position="right" :rules="rule1">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="user.name" placeholder="姓名" />
         </el-form-item>
@@ -149,7 +143,7 @@
             :props="{ checkStrictly: true }"
             clearable
             style="width:100%"
-          ></el-cascader>
+          />
         </el-form-item>
         <el-form-item label="角色" prop="roles">
           <el-select v-model="user.roles" multiple placeholder="请选择" style="width:100%">
@@ -158,7 +152,7 @@
               :key="item.value"
               :label="item.label"
               :value="item.value"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="头像" prop="dept">
@@ -171,8 +165,8 @@
             :before-upload="beforeAvatarUpload"
             :headers="myHeaders"
           >
-            <img v-if="user.avatar" :src="user.avatar" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            <img v-if="user.avatar" :src="user.avatar" class="avatar">
+            <i v-else class="el-icon-plus avatar-uploader-icon" />
           </el-upload>
         </el-form-item>
       </el-form>
@@ -209,201 +203,200 @@
 }
 </style>
 <script>
-import { getUserList, createUser, deleteUser, updateUser } from "@/api/user";
-import { getOrgAll } from "@/api/org";
-import { getRoleAll } from "@/api/role";
-import { genTree, deepClone } from "@/utils";
-import checkPermission from "@/utils/permission";
-import { uploadUrl } from "@/api/file";
-import { getToken } from "@/utils/auth";
-import Pagination from "@/components/Pagination"; // secondary package based on el-pagination
+import { getUserList, createUser, deleteUser, updateUser } from '@/api/user'
+import { getOrgAll } from '@/api/org'
+import { getRoleAll } from '@/api/role'
+import { genTree } from '@/utils'
+import checkPermission from '@/utils/permission'
+import { uploadUrl } from '@/api/file'
+import { getToken } from '@/utils/auth'
+import Pagination from '@/components/Pagination' // secondary package based on el-pagination
 
 const defaultUser = {
-  id: "",
-  name: "",
-  username: "",
+  id: '',
+  name: '',
+  username: '',
   dept: null,
-  avatar:""
-};
+  avatar: ''
+}
 export default {
   components: { Pagination },
-  watch: {
-    filterOrgText(val) {
-      this.$refs.tree.filter(val);
-    }
-  },
   data() {
     return {
       user: {
-        id: "",
-        name: "",
-        username: "",
+        id: '',
+        name: '',
+        username: '',
         dept: null,
-        avatar:""
+        avatar: ''
       },
-      myHeaders: { Authorization: "JWT " + getToken() },
+      myHeaders: { Authorization: 'JWT ' + getToken() },
       uploadUrl: uploadUrl(),
       userList: [],
       roles: [],
       listLoading: true,
       listQuery: {
         page: 1,
-        page_size : 20
+        page_size: 20
       },
       enabledOptions: [
-        { key: "true", display_name: "激活" },
-        { key: "false", display_name: "禁用" }
+        { key: 'true', display_name: '激活' },
+        { key: 'false', display_name: '禁用' }
       ],
       dialogVisible: false,
-      dialogType: "new",
+      dialogType: 'new',
       rule1: {
-        name: [{ required: true, message: "请输入姓名", trigger: "blur" }],
-        username: [{ required: true, message: "请输入账号", trigger: "change" }]
+        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
+        username: [{ required: true, message: '请输入账号', trigger: 'change' }]
         // password: [
-        //   { required: true, message: "请输入密码", trigger: "change" }
+        //   { required: true, message: '请输入密码', trigger: 'change' }
         // ],
       },
-      filterOrgText: "",
+      filterOrgText: '',
       treeLoding: false,
       orgData: []
-    };
+    }
   },
   computed: {},
+  watch: {
+    filterOrgText(val) {
+      this.$refs.tree.filter(val)
+    }
+  },
   created() {
-    this.getList();
-    this.getOrgAll();
-    this.getRoleAll();
+    this.getList()
+    this.getOrgAll()
+    this.getRoleAll()
   },
   methods: {
     checkPermission,
     handleAvatarSuccess(res, file) {
-      if (res.code == 200) {
+      if (res.code === 200) {
         this.user.avatar = res.data.path
-      }else{
-        this.$message.error("头像上传失败!");
+      } else {
+        this.$message.error('头像上传失败!')
       }
     },
     beforeAvatarUpload(file) {
-      const isLt2M = file.size / 1024 / 1024 < 2;
+      const isLt2M = file.size / 1024 / 1024 < 2
       if (!isLt2M) {
-        this.$message.error("上传头像图片大小不能超过 2MB!");
+        this.$message.error('上传头像图片大小不能超过 2MB!')
       }
-      return isLt2M;
+      return isLt2M
     },
     filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     handleOrgClick(obj, node, vue) {
-      this.listQuery.page = 1;
-      this.listQuery.dept = obj.id;
-      this.getList();
+      this.listQuery.page = 1
+      this.listQuery.dept = obj.id
+      this.getList()
     },
     getList() {
-      this.listLoading = true;
+      this.listLoading = true
       getUserList(this.listQuery).then(response => {
-        this.userList = response.data;
-        this.listLoading = false;
-      });
+        this.userList = response.data
+        this.listLoading = false
+      })
     },
     getOrgAll() {
-      this.treeLoding = true;
+      this.treeLoding = true
       getOrgAll().then(response => {
-        this.orgData = genTree(response.data);
-        this.treeLoding = false;
-      });
+        this.orgData = genTree(response.data)
+        this.treeLoding = false
+      })
     },
     getRoleAll() {
       getRoleAll().then(response => {
-        this.roles = genTree(response.data);
-      });
+        this.roles = genTree(response.data)
+      })
     },
     resetFilter() {
       this.listQuery = {
         page: 1,
         page_size: 20
-      };
-      this.getList();
+      }
+      this.getList()
     },
     handleFilter() {
-      this.listQuery.page = 1;
-      this.getList();
+      this.listQuery.page = 1
+      this.getList()
     },
     handleAddUser() {
-      this.user = Object.assign({}, defaultUser);
-      this.dialogType = "new";
-      this.dialogVisible = true;
+      this.user = Object.assign({}, defaultUser)
+      this.dialogType = 'new'
+      this.dialogVisible = true
       this.$nextTick(() => {
-        this.$refs["Form"].clearValidate();
-      });
+        this.$refs['Form'].clearValidate()
+      })
     },
     handleEdit(scope) {
-      this.user = Object.assign({}, scope.row); // copy obj
-      this.dialogType = "edit";
-      this.dialogVisible = true;
+      this.user = Object.assign({}, scope.row) // copy obj
+      this.dialogType = 'edit'
+      this.dialogVisible = true
       this.$nextTick(() => {
-        this.$refs["Form"].clearValidate();
-      });
+        this.$refs['Form'].clearValidate()
+      })
     },
     handleDelete(scope) {
-      this.$confirm("确认删除?", "警告", {
-        confirmButtonText: "确认",
-        cancelButtonText: "取消",
-        type: "error"
+      this.$confirm('确认删除?', '警告', {
+        confirmButtonText: '确认',
+        cancelButtonText: '取消',
+        type: 'error'
       })
-        .then(async () => {
-          await deleteUser(scope.row.id);
-          this.userList.splice(scope.row.index, 1);
+        .then(async() => {
+          await deleteUser(scope.row.id)
+          this.userList.splice(scope.row.index, 1)
           this.$message({
-            type: "success",
-            message: "成功删除!"
-          });
+            type: 'success',
+            message: '成功删除!'
+          })
         })
         .catch(err => {
-          console.error(err);
-        });
+          console.error(err)
+        })
     },
     async confirm(form) {
       this.$refs[form].validate(valid => {
         if (valid) {
-          const isEdit = this.dialogType === "edit";
+          const isEdit = this.dialogType === 'edit'
           if (isEdit) {
-            if(this.user.dept instanceof Array ){
-              this.user.dept = this.user.dept.pop();
+            if (this.user.dept instanceof Array) {
+              this.user.dept = this.user.dept.pop()
             }
             updateUser(this.user.id, this.user).then(res => {
-              if(res.code>=200){
-                this.getList();
-                this.dialogVisible = false;
-              this.$notify({
-                title: "成功",
-                message: "编辑成功",
-                type: "success",
-                duration: 2000
-              });
-              }
-            });
-          } else {
-            this.user.dept = this.user.dept.pop();
-            createUser(this.user).then(res => {
-              if(res.code>=200){
-                this.getList();
-                this.dialogVisible = false;
+              if (res.code >= 200) {
+                this.getList()
+                this.dialogVisible = false
                 this.$notify({
-                title: "成功",
-                message: "新增成功",
-                type: "success",
-                duration: 2000
-              });
+                  title: '成功',
+                  message: '编辑成功',
+                  type: 'success',
+                  duration: 2000
+                })
               }
-              
-            });
+            })
+          } else {
+            this.user.dept = this.user.dept.pop()
+            createUser(this.user).then(res => {
+              if (res.code >= 200) {
+                this.getList()
+                this.dialogVisible = false
+                this.$notify({
+                  title: '成功',
+                  message: '新增成功',
+                  type: 'success',
+                  duration: 2000
+                })
+              }
+            })
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     }
   }
-};
+}
 </script>

@@ -6,8 +6,28 @@ from django.db.models.query import QuerySet
 from utils.model import SoftModel, CommonModel
 
 
-class Dictionary(SoftModel):
-    pass
+class DictType(SoftModel):
+    '''
+    数据字典类型
+    '''
+    name = models.CharField('名称', max_length=30)
+    code = models.CharField('代号', unique=True, max_length=30)
+    pid = models.ForeignKey('self', null=True, blank=True,
+                            on_delete=models.SET_NULL, verbose_name='父')
+
+
+class Dict(SoftModel):
+    '''
+    数据字典
+    '''
+    name = models.CharField('名称', max_length=30, unique=True)
+    desc = models.TextField('描述', blank=True, null=True)
+    type = models.ForeignKey(
+        DictType, on_delete=models.CASCADE, verbose_name='类型')
+    sort = models.IntegerField('排序', default=1)
+    pid = models.ForeignKey('self', null=True, blank=True,
+                            on_delete=models.SET_NULL, verbose_name='父')
+
 
 class Position(CommonModel):
     '''
@@ -63,7 +83,7 @@ class Organization(SoftModel):
     type = models.CharField('类型', max_length=20,
                             choices=organization_type_choices, default='部门')
     pid = models.ForeignKey('self', null=True, blank=True,
-                            on_delete=models.SET_NULL, verbose_name='父类组织')
+                            on_delete=models.SET_NULL, verbose_name='父')
 
     class Meta:
         verbose_name = '组织架构'
