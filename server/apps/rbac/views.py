@@ -173,7 +173,7 @@ class UserViewSet(ModelViewSet):
             if new_password1 == new_password2:
                 user.set_password(new_password2)
                 user.save()
-                return Response('密码修改成功!', status=status.HTTP_400_BAD_REQUEST)
+                return Response('密码修改成功!', status=status.HTTP_200_OK)
             else:
                 return Response('新密码两次输入不一致!', status=status.HTTP_400_BAD_REQUEST)
         else:

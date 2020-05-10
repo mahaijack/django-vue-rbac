@@ -7,7 +7,7 @@ media/
 static/
 __pycache__/
 *.pyc
-settings_dev.py
+**/settings_dev.py
 
 # client
 node_modules/
